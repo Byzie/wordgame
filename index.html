@@ -78,7 +78,35 @@
 
 <script>
 const TOTAL_TIME = 35;
-const dictionary = ["apple", "banana", "cherry", "dog", "elephant", "fish", "grape", "house", "ice", "jungle", "kangaroo", "lemon", "mountain", "nest", "orange", "penguin", "queen", "rabbit", "snake", "tiger", "umbrella", "vulture", "water", "xylophone", "yak", "zebra", "fantastic", "incredible", "phenomenal", "revolutionary", "spectacular", "wonderful"];
+const dictionary = [
+"ability", "absence", "academy", "account", "accused", "achieve", "acquire", "address", "advance", "adverse",
+"advised", "adviser", "against", "airline", "airport", "alleged", "already", "amateur", "amazing", "analyst",
+"ancient", "another", "anxiety", "anxious", "anybody", "apology", "appeals", "applied", "arrange", "arrival",
+"article", "artwork", "aspects", "assault", "asserts", "assumed", "assured", "attempt", "attract", "auction",
+"average", "backing", "balance", "banking", "barrier", "battery", "bearing", "beating", "because", "bedroom",
+"believe", "beneath", "benefit", "besides", "between", "beyond", "bidding", "binding", "brother", "brought",
+"cabinet", "caliber", "calling", "capable", "capital", "captain", "capture", "careful", "carrier", "carried",
+"carrier", "caution", "ceiling", "central", "century", "ceramic", "chamber", "charity", "charlie", "charter",
+"checked", "chicken", "chronic", "circuit", "citizen", "clarify", "classic", "climate", "closely", "closing",
+"closure", "clothes", "collect", "college", "combine", "comfort", "command", "comment", "compact", "company",
+"compare", "compete", "complex", "concept", "concern", "concert", "conduct", "confirm", "connect", "consent",
+"consist", "contact", "contain", "content", "contest", "context", "control", "convert", "correct", "council",
+"counsel", "counter", "country", "crashed", "created", "creator", "cricket", "criminal", "crystal", "culture",
+"current", "curtain", "custody", "cycling", "danger", "database", "daytime", "dealing", "decided", "decline",
+"defense", "deficit", "deliver", "density", "deposit", "desktop", "despite", "destroy", "develop", "diamond",
+"digital", "dilemma", "disease", "dismiss", "display", "dispute", "distant", "diverse", "divided", "drawing",
+"driving", "dynamic", "earlier", "earnest", "economy", "edition", "elderly", "elected", "element", "embrace",
+"emotion", "employe", "enabled", "enemies", "enhance", "essence", "evening", "evident", "exactly", "examine",
+"example", "excited", "exclude", "exhibit", "expense", "explain", "explore", "exposed", "express", "extreme",
+"factory", "faculty", "failing", "failure", "fashion", "feature", "federal", "feeling", "fiction", "fifteen",
+"fighter", "filling", "finance", "finding", "fishing", "fitness", "flavor", "floating", "flowers", "focuses",
+"foreign", "forests", "forgive", "formula", "fortune", "forward", "fossils", "founder", "freedom", "freight",
+"friends", "gallery", "gallons", "garbage", "gathers", "general", "genetic", "genuine", "gesture", "gigantic",
+"glacier", "glamour", "glimpse", "glowing", "grammar", "greater", "grocery", "growing", "guardian", "habitat",
+"halfway", "handful", "hanging", "harbour", "hardest", "harmony", "harvest", "heading", "healthy", "hearing",
+"heavily", "helpful", "heritage", "highway", "himself", "history", "holiday", "horizon", "hosting", "housing",
+"however", "hundred", "husband", "iceberg", "identify", "illegal", "illness", "imagine", "impress", "improve"
+];
 
 let targetWord = "";
 let currentIndex = 0;
@@ -86,7 +114,7 @@ let score = 0;
 let timeLeft = TOTAL_TIME;
 let recognition;
 let timerInterval;
-let mode = "mic"; // default mode
+let mode = "mic";
 let usedWords = new Set();
 
 const startBtn = document.getElementById('startBtn');
