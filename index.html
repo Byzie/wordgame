@@ -161,18 +161,14 @@ function nextLetter() {
 function validateWord(spokenWord) {
   const currentLetter = targetWord[currentIndex].toLowerCase();
   if (spokenWord && spokenWord[0].toLowerCase() === currentLetter) {
-    if (dictionary.includes(spokenWord.toLowerCase())) {
-      let points = spokenWord.length;
-      score += points;
-      if (spokenWord.length >= 10) {
-        timeLeft += 1.5;
-        logMessage(`+1.5s bonus for long word!`, "success");
-      }
-      logMessage(`Correct! ${spokenWord} (+${points} pts)`, "success");
-      nextLetter();
-    } else {
-      logMessage(`Word not recognized: ${spokenWord}`, "error");
+    let points = spokenWord.length;
+    score += points;
+    if (spokenWord.length >= 10) {
+      timeLeft += 1.5;
+      logMessage(`+1.5s bonus for long word!`, "success");
     }
+    logMessage(`Correct! ${spokenWord} (+${points} pts)`, "success");
+    nextLetter();
   } else {
     logMessage(`Word doesn't match current letter: ${spokenWord}`, "error");
   }
@@ -201,7 +197,6 @@ function startRecognition() {
   recognition.start();
 }
 
-// --- Event Listeners ---
 startBtn.addEventListener('click', () => {
   score = 0;
   timeLeft = TOTAL_TIME;
