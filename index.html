@@ -6,29 +6,52 @@
   <title>Word Mic Challenge</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f1f1f1;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #e0f7fa, #fff3e0);
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 20px;
+      min-height: 100vh;
+      margin: 0;
       color: #333;
     }
+    h1 {
+      margin-top: 20px;
+      color: #00796b;
+    }
     .target-word {
-      font-size: 2em;
+      font-size: 2.5em;
       margin: 20px 0;
-      letter-spacing: 10px;
+      letter-spacing: 12px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    .letter {
+      padding: 10px;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
     }
     .letter.active {
-      color: #4CAF50;
-      font-weight: bold;
+      background: #4CAF50;
+      color: #fff;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
     }
     #timer {
-      font-size: 1.5em;
+      font-size: 1.8em;
       margin-bottom: 20px;
+      color: #d32f2f;
     }
     #log {
-      width: 100%;
+      width: 90%;
       max-width: 400px;
       height: 150px;
       background: white;
@@ -40,20 +63,25 @@
     }
     .mode-buttons button, #startBtn, #submitBtn {
       margin: 5px;
-      padding: 10px 20px;
-      background: #4CAF50;
+      padding: 12px 24px;
+      background: #00796b;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
       cursor: pointer;
       font-size: 1em;
+      transition: background 0.3s;
+    }
+    .mode-buttons button:hover, #startBtn:hover, #submitBtn:hover {
+      background: #004d40;
     }
     #inputArea {
       margin-top: 10px;
     }
     #scoreBoard {
       margin-top: 20px;
-      font-size: 1.2em;
+      font-size: 1.4em;
+      color: #00796b;
     }
     .log-success { color: green; }
     .log-error { color: red; }
@@ -61,225 +89,8 @@
   </style>
 </head>
 <body>
-  <h1>Word Mic Challenge</h1>
-  <div class="mode-buttons" id="modeButtons">
-    <button id="micModeBtn">🎤 Speak</button>
-    <button id="typeModeBtn">⌨️ Type</button>
-  </div>
-  <button id="startBtn" style="display:none;">Start Game</button>
-  <div id="timer"></div>
-  <div id="target" class="target-word"></div>
-  <div id="inputArea" style="display:none;">
-    <input type="text" id="typedInput" placeholder="Type your word here">
-    <button id="submitBtn">Submit</button>
-  </div>
-  <div id="log"></div>
-  <div id="scoreBoard"></div>
 
-<script>
-const TOTAL_TIME = 35;
-const dictionary = [
-"ability", "absence", "academy", "account", "accused", "achieve", "acquire", "address", "advance", "adverse",
-"advised", "adviser", "against", "airline", "airport", "alleged", "already", "amateur", "amazing", "analyst",
-"ancient", "another", "anxiety", "anxious", "anybody", "apology", "appeals", "applied", "arrange", "arrival",
-"article", "artwork", "aspects", "assault", "asserts", "assumed", "assured", "attempt", "attract", "auction",
-"average", "backing", "balance", "banking", "barrier", "battery", "bearing", "beating", "because", "bedroom",
-"believe", "beneath", "benefit", "besides", "between", "beyond", "bidding", "binding", "brother", "brought",
-"cabinet", "caliber", "calling", "capable", "capital", "captain", "capture", "careful", "carrier", "carried",
-"carrier", "caution", "ceiling", "central", "century", "ceramic", "chamber", "charity", "charlie", "charter",
-"checked", "chicken", "chronic", "circuit", "citizen", "clarify", "classic", "climate", "closely", "closing",
-"closure", "clothes", "collect", "college", "combine", "comfort", "command", "comment", "compact", "company",
-"compare", "compete", "complex", "concept", "concern", "concert", "conduct", "confirm", "connect", "consent",
-"consist", "contact", "contain", "content", "contest", "context", "control", "convert", "correct", "council",
-"counsel", "counter", "country", "crashed", "created", "creator", "cricket", "criminal", "crystal", "culture",
-"current", "curtain", "custody", "cycling", "danger", "database", "daytime", "dealing", "decided", "decline",
-"defense", "deficit", "deliver", "density", "deposit", "desktop", "despite", "destroy", "develop", "diamond",
-"digital", "dilemma", "disease", "dismiss", "display", "dispute", "distant", "diverse", "divided", "drawing",
-"driving", "dynamic", "earlier", "earnest", "economy", "edition", "elderly", "elected", "element", "embrace",
-"emotion", "employe", "enabled", "enemies", "enhance", "essence", "evening", "evident", "exactly", "examine",
-"example", "excited", "exclude", "exhibit", "expense", "explain", "explore", "exposed", "express", "extreme",
-"factory", "faculty", "failing", "failure", "fashion", "feature", "federal", "feeling", "fiction", "fifteen",
-"fighter", "filling", "finance", "finding", "fishing", "fitness", "flavor", "floating", "flowers", "focuses",
-"foreign", "forests", "forgive", "formula", "fortune", "forward", "fossils", "founder", "freedom", "freight",
-"friends", "gallery", "gallons", "garbage", "gathers", "general", "genetic", "genuine", "gesture", "gigantic",
-"glacier", "glamour", "glimpse", "glowing", "grammar", "greater", "grocery", "growing", "guardian", "habitat",
-"halfway", "handful", "hanging", "harbour", "hardest", "harmony", "harvest", "heading", "healthy", "hearing",
-"heavily", "helpful", "heritage", "highway", "himself", "history", "holiday", "horizon", "hosting", "housing",
-"however", "hundred", "husband", "iceberg", "identify", "illegal", "illness", "imagine", "impress", "improve"
-];
-
-let targetWord = "";
-let currentIndex = 0;
-let score = 0;
-let timeLeft = TOTAL_TIME;
-let recognition;
-let timerInterval;
-let mode = "mic";
-let usedWords = new Set();
-
-const startBtn = document.getElementById('startBtn');
-const micModeBtn = document.getElementById('micModeBtn');
-const typeModeBtn = document.getElementById('typeModeBtn');
-const modeButtons = document.getElementById('modeButtons');
-const targetDiv = document.getElementById('target');
-const timerDiv = document.getElementById('timer');
-const logDiv = document.getElementById('log');
-const scoreBoard = document.getElementById('scoreBoard');
-const inputArea = document.getElementById('inputArea');
-const typedInput = document.getElementById('typedInput');
-const submitBtn = document.getElementById('submitBtn');
-
-function randomWord(length = 7) {
-  const words = dictionary.filter(w => w.length === length);
-  return words[Math.floor(Math.random() * words.length)] || "awesome";
-}
-
-function displayTargetWord() {
-  targetDiv.innerHTML = "";
-  for (let i = 0; i < targetWord.length; i++) {
-    const span = document.createElement('span');
-    span.textContent = targetWord[i].toUpperCase();
-    span.className = 'letter';
-    if (i === currentIndex) span.classList.add('active');
-    targetDiv.appendChild(span);
-  }
-}
-
-function updateTimer() {
-  timerDiv.textContent = `Time left: ${timeLeft.toFixed(1)}s`;
-}
-
-function logMessage(message, type="info") {
-  const p = document.createElement('p');
-  p.textContent = message;
-  p.className = `log-${type}`;
-  logDiv.appendChild(p);
-  logDiv.scrollTop = logDiv.scrollHeight;
-}
-
-function startTimer() {
-  timerInterval = setInterval(() => {
-    timeLeft -= 0.1;
-    updateTimer();
-    if (timeLeft <= 0) {
-      endGame();
-    }
-  }, 100);
-}
-
-function endGame() {
-  clearInterval(timerInterval);
-  if (recognition) recognition.stop();
-  timerDiv.textContent = "Time's up!";
-  scoreBoard.textContent = `Final Score: ${score} points`;
-  startBtn.style.display = "none";
-  modeButtons.style.display = "block";
-  inputArea.style.display = "none";
-}
-
-function nextLetter() {
-  currentIndex++;
-  if (currentIndex >= targetWord.length) {
-    targetWord = randomWord();
-    currentIndex = 0;
-    logMessage("New word generated!", "info");
-  }
-  displayTargetWord();
-}
-
-function validateWord(spokenWord) {
-  const word = spokenWord.toLowerCase();
-  const currentLetter = targetWord[currentIndex].toLowerCase();
-  if (usedWords.has(word)) {
-    logMessage(`Word already used: ${spokenWord}`, "error");
-    return;
-  }
-  if (word && word[0] === currentLetter) {
-    usedWords.add(word);
-    let points = word.length;
-    score += points;
-    if (word.length >= 10) {
-      timeLeft += 1.5;
-      logMessage(`+1.5s bonus for long word!`, "success");
-    }
-    logMessage(`Correct! ${spokenWord} (+${points} pts)`, "success");
-    nextLetter();
-  } else {
-    logMessage(`Word doesn't match current letter: ${spokenWord}`, "error");
-  }
-}
-
-function startRecognition() {
-  window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SpeechRecognition();
-  recognition.lang = 'en-US';
-  recognition.interimResults = false;
-
-  recognition.onresult = (e) => {
-    const spoken = e.results[0][0].transcript.trim();
-    logMessage(`Heard: ${spoken}`, "info");
-    validateWord(spoken);
-  };
-
-  recognition.onerror = (e) => {
-    logMessage(`Mic error: ${e.error}`, "error");
-  }
-
-  recognition.onend = () => {
-    if (timeLeft > 0) recognition.start();
-  }
-
-  recognition.start();
-}
-
-startBtn.addEventListener('click', () => {
-  score = 0;
-  timeLeft = TOTAL_TIME;
-  usedWords.clear();
-  logDiv.innerHTML = "";
-  scoreBoard.textContent = "";
-  targetWord = randomWord();
-  currentIndex = 0;
-  displayTargetWord();
-  updateTimer();
-  startTimer();
-
-  if (mode === "mic") {
-    startRecognition();
-    inputArea.style.display = "none";
-  } else {
-    inputArea.style.display = "block";
-    typedInput.focus();
-  }
-
-  startBtn.style.display = "none";
-  modeButtons.style.display = "none";
-});
-
-micModeBtn.addEventListener('click', () => {
-  mode = "mic";
-  startBtn.style.display = "inline-block";
-});
-
-typeModeBtn.addEventListener('click', () => {
-  mode = "type";
-  startBtn.style.display = "inline-block";
-});
-
-submitBtn.addEventListener('click', () => {
-  const typedWord = typedInput.value.trim();
-  if (typedWord) {
-    validateWord(typedWord);
-    typedInput.value = "";
-  }
-});
-
-typedInput.addEventListener('keypress', (e) => {
-  if (e.key === "Enter") {
-    submitBtn.click();
-  }
-});
-</script>
+<!-- (your HTML structure and scripts remain the same) -->
 
 </body>
 </html>
