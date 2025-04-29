@@ -87,6 +87,7 @@ let timeLeft = TOTAL_TIME;
 let recognition;
 let timerInterval;
 let mode = "mic"; // default mode
+let usedWords = new Set();
 
 const startBtn = document.getElementById('startBtn');
 const micModeBtn = document.getElementById('micModeBtn');
@@ -159,11 +160,17 @@ function nextLetter() {
 }
 
 function validateWord(spokenWord) {
+  const word = spokenWord.toLowerCase();
   const currentLetter = targetWord[currentIndex].toLowerCase();
-  if (spokenWord && spokenWord[0].toLowerCase() === currentLetter) {
-    let points = spokenWord.length;
+  if (usedWords.has(word)) {
+    logMessage(`Word already used: ${spokenWord}`, "error");
+    return;
+  }
+  if (word && word[0] === currentLetter) {
+    usedWords.add(word);
+    let points = word.length;
     score += points;
-    if (spokenWord.length >= 10) {
+    if (word.length >= 10) {
       timeLeft += 1.5;
       logMessage(`+1.5s bonus for long word!`, "success");
     }
@@ -200,6 +207,7 @@ function startRecognition() {
 startBtn.addEventListener('click', () => {
   score = 0;
   timeLeft = TOTAL_TIME;
+  usedWords.clear();
   logDiv.innerHTML = "";
   scoreBoard.textContent = "";
   targetWord = randomWord();
